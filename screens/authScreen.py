@@ -17,8 +17,8 @@ class AuthScreen(tk.Frame):
         try:
             with open("credentials.pkl", "rb") as file:
                 self.credentials = pickle.load(file)
-        except FileNotFoundError:
-            pass  # File doesn't exist, create an empty dictionary
+        except (FileNotFoundError, EOFError):
+            self.credentials = {}
 
         self.show_login()
 

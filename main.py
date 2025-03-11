@@ -26,4 +26,3 @@ class RPSApp(tk.Tk):
 
 app = RPSApp()
 app.mainloop()
-
