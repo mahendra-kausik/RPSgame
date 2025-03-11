@@ -1,10 +1,47 @@
+# Rock-Paper-Scissors Game
 
-# RPSGame
+A networked Rock-Paper-Scissors game built in Python with a graphical user interface (GUI) using Tkinter. The project supports both single-player (vs. a bot) and multiplayer (vs. another player) modes, complete with user authentication and real-time gameplay. All network communication is handled via TCP sockets.
 
-A simple yet engaging Rock-Paper-Scissors game built in Python using Tkinter for the graphical user interface and the socket library for networking capabilities. This project demonstrates how to combine a classic game mechanic with Python’s standard libraries to create both a local and networked gameplay experience.
+---
 
-Features
-GUI with Tkinter: Enjoy an interactive interface that’s easy to navigate.
-Single or Multi-Player Support: Play solo against the computer or connect with friends via sockets.
-Real-Time Updates: Results and game states are displayed immediately after each move.
-Lightweight and Easy to Set Up: No external dependencies beyond Python’s standard libraries.
+## Features
+
+- **User Authentication:**  
+  Log in or sign up using stored credentials (via pickle) to access the game.
+  
+- **Single-Player Mode:**  
+  Play against a computer-controlled opponent with a responsive GUI.
+
+- **Multiplayer Mode:**  
+  Challenge another player over the network in real time.
+
+- **Reliable Networking:**  
+  Uses TCP sockets to ensure reliable, ordered, and error-checked data transmission.
+
+- **Automatic Server Detection:**  
+  The client scans the local network to detect an active server automatically.
+
+- **Multi-threaded Server:**  
+  The server handles multiple client connections concurrently using threading.
+
+---
+
+## Requirements
+
+- Python 3.x
+- Tkinter (bundled with Python)
+- [Pillow](https://pillow.readthedocs.io/) for image handling  
+  _Install via:_ `pip install Pillow`
+
+Other standard libraries used include: `socket`, `_thread`, `pickle`, and `os`.
+
+---
+
+## Installation
+
+Clone the repository and install any necessary dependencies:
+
+```bash
+git clone https://github.com/mahendra-kausik/RPSgame.git
+cd RPSgame
+pip install -r requirements.txt
