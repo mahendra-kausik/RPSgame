@@ -1,42 +1,53 @@
 import socket
+import logging
+import time
 
-print("[!] Finding an available server....")
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s - %(message)s')
+
 def get_ip():
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.connect(("8.8.8.8", 80))
-    ip = sock.getsockname()
-    sock.close()
-    return ip
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.connect(("8.8.8.8", 80))
+        ip = sock.getsockname()
+        sock.close()
+        return ip
+    except Exception as e:
+        logging.error(f"Error fetching IP: {e}")
+        return None
 
-def detect_server():
+def detect_server(max_retries=5, delay=2):
     ip = get_ip()
+    if not ip:
+        return None
+
     base_ip = ip[0].split('.')[0:3]
-    server_ip = ""
-    
-    print(f"[!] Scanning network range {'.'.join(base_ip)}.1 to {'.'.join(base_ip)}.254")
+    retry = 0
 
-    for i in range(1, 255):  # scan wider range!
-        test_ip = ".".join(base_ip) + f".{i}"
+    while retry < max_retries:
+        logging.info(f"Scanning network range {'.'.join(base_ip)}.1 to {'.'.join(base_ip)}.254 (Attempt {retry+1}/{max_retries})")
+        for i in range(1, 255):
+            test_ip = ".".join(base_ip) + f".{i}"
 
-        try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(0.1)  # more reasonable timeout
-            sock.connect((test_ip, 5555))
+            try:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.settimeout(0.1)
+                sock.connect((test_ip, 5555))
+                sock.send("PING".encode())
 
-            print(f"[+] Server found at {test_ip}")
-            sock.send("PING".encode())  # handshake ping
-            server_ip = test_ip
-            sock.close()
-            break  # found server, stop scanning!
+                logging.info(f"Server found at {test_ip}")
+                sock.close()
+                return test_ip
 
-        except Exception as e:
-            # Uncomment below if you want to see failed IPs:
-            # print(f"[-] No response from {test_ip}")
-            continue
+            except socket.timeout:
+                continue
+            except Exception as e:
+                continue
+            finally:
+                sock.close()
 
-    if server_ip == "":
-        print("[!] No server found, rescanning...")
-        return detect_server()  # recursive retry (optional, but careful!)
-    
-    else:
-        return server_ip
+        retry += 1
+        logging.warning("No server found, retrying...")
+        time.sleep(delay)
+
+    logging.error("Server not found after max retries.")
+    return None
